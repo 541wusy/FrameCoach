@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FrameCoach</title>
+<style>
+  :root { --bg:#faf9f6; --ink:#1d1d1f; --mut:#6b6b70; --line:#e2e0da; --acc:#2f5d50; --warn:#a4442a; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui,sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:16px 24px; border-bottom:1px solid var(--line); display:flex; gap:24px; align-items:baseline; flex-wrap:wrap; }
+  header h1 { margin:0; font-size:20px; }
+  nav button { background:none; border:0; font:inherit; padding:6px 10px; cursor:pointer; color:var(--mut); border-bottom:2px solid transparent; }
+  nav button.on { color:var(--ink); border-color:var(--acc); }
+  main { max-width:980px; margin:0 auto; padding:24px; }
+  .page { display:none; } .page.on { display:block; }
+  .drop { border:2px dashed var(--line); border-radius:10px; padding:28px; text-align:center; color:var(--mut); cursor:pointer; }
+  .drop.over { border-color:var(--acc); color:var(--acc); }
+  button.btn { background:var(--acc); color:#fff; border:0; padding:8px 14px; border-radius:6px; font:inherit; cursor:pointer; }
+  button.btn.sec { background:#fff; color:var(--ink); border:1px solid var(--line); }
+  button.btn:disabled { opacity:.5; cursor:default; }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:12px 0; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:8px 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px; }
+  .mut { color:var(--mut); font-size:13px; }
+  .tag { display:inline-block; font-size:12px; padding:1px 8px; border-radius:99px; background:#eef2f0; margin:0 4px 2px 0; }
+  .lbl { font-size:11px; font-weight:600; padding:1px 7px; border-radius:4px; color:#fff; }
+  .Measured { background:#2f5d50; } .Observed { background:#3b6ea5; } .Inferred { background:#b07a1c; }
+  .bad { color:var(--warn); }
+  .sw { display:inline-block; width:16px; height:16px; border-radius:3px; vertical-align:middle; margin-right:3px; border:1px solid var(--line); }
+  table { border-collapse:collapse; width:100%; } td,th { text-align:left; padding:4px 8px; border-bottom:1px solid var(--line); font-size:14px; }
+  #notice { background:#fff7e0; border-bottom:1px solid #ecd9a0; padding:10px 24px; font-size:13px; display:none; }
+</style>
+</head>
+<body>
+<div id="notice">Privacy: photos are shrunk in your browser and sent to a model provider for analysis. Originals and reference images are never stored; results live only in this browser.
+  <button class="btn sec" id="ok" style="padding:2px 10px;margin-left:8px">Got it</button></div>
+<header>
+  <h1>FrameCoach</h1>
+  <nav>
+    <button data-p="recipe" class="on">Reference &amp; recipe</button>
+    <button data-p="photos">My photos</button>
+    <button data-p="profile">Profile</button>
+    <button data-p="data">Data</button>
+  </nav>
+</header>
+<main>
+  <section id="photos" class="page">
+    <h2>My photos</h2>
+    <p class="mut">Upload JPEGs. Duplicates are skipped by content hash; camera data (EXIF) is read before shrinking.</p>
+    <div class="drop" data-kind="user">Drop JPEGs here or click to choose<input type="file" accept="image/jpeg" multiple hidden></div>
+    <div class="row" id="photoSummary"></div>
+    <div class="grid" id="photoList"></div>
+  </section>
+
+  <section id="recipe" class="page on">
+    <h2>Reference &amp; shooting recipe</h2>
+    <p class="mut">1) Add your own photos in “My photos”. 2) Upload 3–10 photos whose style you admire. 3) Generate a recipe for your next shoot. Reference images are analyzed then discarded.</p>
+    <div class="drop" data-kind="ref">Drop 3–10 reference JPEGs here or click to choose<input type="file" accept="image/jpeg" multiple hidden></div>
+    <div class="row"><span id="refSummary" class="mut"></span><button class="btn sec" id="clearRefs">Clear references</button></div>
+    <div class="grid" id="refList"></div>
+    <div class="row"><button class="btn" id="makeRecipe">Generate recipe</button><span id="recipeStatus" class="mut"></span></div>
+    <div id="gapOut"></div>
+    <div id="recipeOut"></div>
+  </section>
+
+  <section id="profile" class="page"><h2>Profile</h2><div id="profileOut"></div></section>
+
+  <section id="data" class="page">
+    <h2>Data</h2>
+    <div class="row">
+      <button class="btn" id="exp">Export JSON</button>
+      <button class="btn sec" id="impBtn">Import JSON</button><input type="file" id="imp" accept="application/json" hidden>
+      <button class="btn sec" id="delAll" style="color:var(--warn)">Delete everything</button>
+    </div>
+    <p class="mut" id="dataMsg"></p>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/exifr@7/dist/lite.umd.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
